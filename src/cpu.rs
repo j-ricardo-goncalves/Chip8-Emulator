@@ -22,4 +22,19 @@ impl Cpu {
             st: 0,
         }
     }
+
+    pub fn tick(&mut self) {
+        let high_nibble = self.mem[self.pc as usize] as u16;
+        let low_nibble  = self.mem[(self.pc+1) as usize] as u16;
+        let opcode: u16 = high_nibble << 8 | low_nibble;
+        
+        self.pc += 2;
+
+        self.execute(opcode)        
+    }
+
+    pub fn execute(&mut self, opcode: u16) {
+        println!("No such opcode: {}", opcode)
+    }
 }
+
