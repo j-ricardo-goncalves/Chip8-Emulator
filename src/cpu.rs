@@ -50,16 +50,16 @@ impl Cpu {
             (4, _, _, _) => if self.v[n2 as usize] != (opcode & 0x00FF) as u8 {self.pc += 2;},
             (5, _, _, 0) => if self.v[n2 as usize] == self.v[n3 as usize] {self.pc += 2;},
             (6, _, _, _) => self.v[n2 as usize] = (opcode & 0x00FF) as u8,    // set v register
-            (7, _, _, _) => self.v[n2 as usize] += (opcode & 0x00FF) as u8,   // add v register
+            (7, _, _, _) => self.v[n2 as usize] = self.v[n2 as usize].wrapping_add((opcode & 0x00FF) as u8),   // add v register
             (8, _, _, 0) => self.v[n2 as usize] = self.v[n3 as usize],
             (8, _, _, 1) => self.v[n2 as usize] |= self.v[n3 as usize],
             (8, _, _, 2) => self.v[n2 as usize] &= self.v[n3 as usize],
             (8, _, _, 3) => self.v[n2 as usize] ^= self.v[n3 as usize],
-            (8, _, _, 4) => self.v[n2 as usize] += self.v[n3 as usize],
-            (8, _, _, 5) => self.v[n2 as usize] -= self.v[n3 as usize],
+            (8, _, _, 4) => self.v[n2 as usize] = self.v[n2 as usize].wrapping_add(self.v[n3 as usize]),
+            (8, _, _, 5) => self.v[n2 as usize] = self.v[n2 as usize].wrapping_sub(self.v[n3 as usize]),
             (8, _, _, 6) => self.v[n2 as usize] >>= 1, 
             (8, _, _, 7) => self.v[n2 as usize] = self.v[n3 as usize] - self.v[n2 as usize],
-            (8, _, _, E) => self.v[n2 as usize] <<= 1, 
+            (8, _, _, 0xE) => self.v[n2 as usize] <<= 1, 
             (9, _, _, 0) => if self.v[n2 as usize] != self.v[n3 as usize] {self.pc += 2;},
             (0xA, _, _, _) => self.i = opcode & 0xFFF,                         // set i register
             (0xD, _, _, _) => self.draw(n2, n3, n4, buffer),
