@@ -1,5 +1,7 @@
-use minifb::{Window, WindowOptions};
+use minifb::{Window, WindowOptions, Scale};
 
+pub const ON: u32 = 0x00FF66;
+pub const OFF: u32 = 0x00000;
 pub const WIDTH: usize = 64;
 pub const HEIGHT: usize = 32;
 
@@ -8,7 +10,10 @@ pub fn new() -> Window {
         "Chip 8 Emulator/Interpreter",
         WIDTH,
         HEIGHT,
-        WindowOptions::default(),
+        WindowOptions {
+            scale: Scale::X16,
+            ..WindowOptions::default() 
+        },
     )
     .unwrap_or_else(|e| {
         panic!("{}", e);
