@@ -62,6 +62,7 @@ impl Cpu {
             (8, _, _, 0xE) => self.v[n2 as usize] <<= 1, 
             (9, _, _, 0) => if self.v[n2 as usize] != self.v[n3 as usize] {self.pc += 2;},
             (0xA, _, _, _) => self.i = opcode & 0xFFF,                         // set i register
+            (0xB, _, _, _) => self.pc = opcode & 0xFFF + self.v[n2 as usize] as u16, 
             (0xD, _, _, _) => self.draw(n2, n3, n4, buffer),
             _ => println!("No such opcode: {}", opcode),
         }
