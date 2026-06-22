@@ -5,6 +5,7 @@ mod screen;
 
 fn main() {
     let mut cpu = cpu::Cpu::new();
+    let mut buffer = [0; screen::WIDTH * screen::HEIGHT];
     let mut window = screen::new();
     
     let rom = fs::read("roms/IBM Logo.ch8").expect("failed to read ROM");
@@ -13,6 +14,7 @@ fn main() {
     }
     
     while !window.is_key_down(Key::Escape) {
-        screen::update_buffer(&mut window, vec![0; screen::WIDTH * screen::HEIGHT]);
+        cpu::Cpu::tick(&mut cpu, &mut buffer);
+        screen::update_buffer(&mut window, &buffer);
     }
 }
