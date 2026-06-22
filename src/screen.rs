@@ -21,7 +21,7 @@ pub fn new() -> Window {
     window
 }
 
-pub fn update_buffer(window: &mut Window, buffer: Vec<u32>) {
+pub fn update_buffer(window: &mut Window, buffer: &[u32]) {
     window
         .update_with_buffer(&buffer, WIDTH, HEIGHT)
         .unwrap();
