@@ -51,5 +51,23 @@ impl Cpu {
             _ => println!("No such opcode: {}", opcode),
         }
     }
-}
 
+    pub fn draw(&mut self, vx: u16, vy: u16, n: u16, buffer: &mut [u32]) {
+        let mut x = self.v[vx as usize] & (screen::WIDTH - 1) as u8;
+        let mut y = self.v[vy as usize] & (screen::HEIGHT - 1) as u8;
+        self.v[0xF as usize] = 0;
+        for i in 0..n {
+            if y as usize + i as usize >= 32 {break;}
+            let mut sprite_data = self.mem[(self.i + i) as usize];
+            for j in 0..8 {
+                if x as usize + j as usize >= 64 {continue;}
+                let index = (y as usize+ i as usize) * 64 + (x as usize + j as usize);
+                if sprite_data & 0x80 != 0 {
+                    buffer[index] ^= screen::ON;
+                    self.v[0xF] = if buffer[index] == screen::OFF {0} else {1};
+                }
+                sprite_data <<= 1;
+            }
+        }
+    }
+}
