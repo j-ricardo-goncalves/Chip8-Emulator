@@ -46,9 +46,12 @@ impl Cpu {
             (0, 0, 0xE, 0xE) => self.return()
             (1, _, _, _) => self.pc = (opcode & 0x0FFF),                      // jump
             (2, _, _, _) => self.call(opcode & 0x0FFF),
+            (3, _, _, _) => if self.v[n2 as usize] == opcode & 0x00FF {self.pc += 2;},
+            (4, _, _, _) => if self.v[n2 as usize] != opcode & 0x00FF {self.pc += 2;},
+            (5, _, _, 0) => if self.v[n2 as usize] == self.v[n3 as usize] {self.pc += 2;},
             (6, _, _, _) => self.v[n2 as usize] = (opcode & 0x00FF) as u8,    // set v register
             (7, _, _, _) => self.v[n2 as usize] += (opcode & 0x00FF) as u8,   // add v register
-            (0xA, _, _, _) => self.i = opcode & 0xFFF,                        // set i register
+            (9, _, _, 0) => if self.v[n2 as usize] != self.v[n3 as usize] {self.pc += 2;}            (0xA, _, _, _) => self.i = opcode & 0xFFF,                        // set i register
             (0xD, _, _, _) => self.draw(n2, n3, n4, buffer),
             _ => println!("No such opcode: {}", opcode),
         }
