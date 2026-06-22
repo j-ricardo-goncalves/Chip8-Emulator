@@ -1,7 +1,7 @@
 use minifb::{Window, WindowOptions};
 
-pub const WIDTH: usize = 640;
-pub const HEIGHT: usize = 320;
+pub const WIDTH: usize = 64;
+pub const HEIGHT: usize = 32;
 
 pub fn new() -> Window {
     let mut window = Window::new(
