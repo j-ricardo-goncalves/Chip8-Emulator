@@ -43,11 +43,11 @@ impl Cpu {
 
         match (n1, n2, n3, n4) {
             (0, 0, 0xE, 0) => buffer.fill(screen::OFF),                       // clear screen 
-            (0, 0, 0xE, 0xE) => self.return()
+            (0, 0, 0xE, 0xE) => self.return_call(),
             (1, _, _, _) => self.pc = (opcode & 0x0FFF),                      // jump
             (2, _, _, _) => self.call(opcode & 0x0FFF),
-            (3, _, _, _) => if self.v[n2 as usize] == opcode & 0x00FF {self.pc += 2;},
-            (4, _, _, _) => if self.v[n2 as usize] != opcode & 0x00FF {self.pc += 2;},
+            (3, _, _, _) => if self.v[n2 as usize] == (opcode & 0x00FF) as u8 {self.pc += 2;},
+            (4, _, _, _) => if self.v[n2 as usize] != (opcode & 0x00FF) as u8 {self.pc += 2;},
             (5, _, _, 0) => if self.v[n2 as usize] == self.v[n3 as usize] {self.pc += 2;},
             (6, _, _, _) => self.v[n2 as usize] = (opcode & 0x00FF) as u8,    // set v register
             (7, _, _, _) => self.v[n2 as usize] += (opcode & 0x00FF) as u8,   // add v register
@@ -60,14 +60,14 @@ impl Cpu {
             (8, _, _, 6) => self.v[n2 as usize] >>= 1, 
             (8, _, _, 7) => self.v[n2 as usize] = self.v[n3 as usize] - self.v[n2 as usize],
             (8, _, _, E) => self.v[n2 as usize] <<= 1, 
-            (9, _, _, 0) => if self.v[n2 as usize] != self.v[n3 as usize] {self.pc += 2};
-            (0xA, _, _, _) => self.i = opcode & 0xFFF                         // set i register
+            (9, _, _, 0) => if self.v[n2 as usize] != self.v[n3 as usize] {self.pc += 2;},
+            (0xA, _, _, _) => self.i = opcode & 0xFFF,                         // set i register
             (0xD, _, _, _) => self.draw(n2, n3, n4, buffer),
             _ => println!("No such opcode: {}", opcode),
         }
     }
 
-    pub fn return(&mut self) {
+    pub fn return_call(&mut self) {
         self.sp -= 1; 
         self.pc = self.stack[self.sp as usize]
     }
