@@ -43,13 +43,26 @@ impl Cpu {
 
         match (n1, n2, n3, n4) {
             (0, 0, 0xE, 0) => buffer.fill(screen::OFF),                       // clear screen 
+            (0, 0, 0xE, 0xE) => self.return()
             (1, _, _, _) => self.pc = (opcode & 0x0FFF),                      // jump
+            (2, _, _, _) => self.call(opcode & 0x0FFF),
             (6, _, _, _) => self.v[n2 as usize] = (opcode & 0x00FF) as u8,    // set v register
             (7, _, _, _) => self.v[n2 as usize] += (opcode & 0x00FF) as u8,   // add v register
             (0xA, _, _, _) => self.i = opcode & 0xFFF,                        // set i register
             (0xD, _, _, _) => self.draw(n2, n3, n4, buffer),
             _ => println!("No such opcode: {}", opcode),
         }
+    }
+
+    pub fn return(&mut self) {
+        self.sp -= 1; 
+        self.pc = self.stack[self.sp as usize]
+    }
+
+    pub fn call(&mut self, destination: u16) {
+        self.stack[self.sp as usize] = self.pc;
+        self.sp += 1;
+        self.pc = destination;
     }
 
     pub fn draw(&mut self, vx: u16, vy: u16, n: u16, buffer: &mut [u32]) {
