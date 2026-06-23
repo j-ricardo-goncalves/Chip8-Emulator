@@ -1,7 +1,6 @@
 use crate::screen;
 use rand::rng;
 
-
 const font: [u8; 80] = [
 	0xF0, 0x90, 0x90, 0x90, 0xF0,		// 0
 	0x20, 0x60, 0x20, 0x20, 0x70,		// 1
@@ -94,6 +93,7 @@ impl Cpu {
             (0xF, _, 1, 0xE) => self.i = self.i.wrapping_add(self.v[n3 as usize] as u16),
             (0xF, _, 0, 0xA) => if input.iter().all(|&x| !x) {self.pc -= 2;}
             (0xF, _, 2, 9) => self.i = self.v[n2 as usize] as u16 * 5,
+            (0xF, _, 3, 3) => self.decimal_conversion(n2),
             _ => println!("No such opcode: {}", opcode),
         }
     }
@@ -126,5 +126,12 @@ impl Cpu {
                 sprite_data <<= 1;
             }
         }
+    }
+
+    pub fn decimal_conversion(&mut self, vx: u16) {
+        let x = self.v[vx as usize];
+        self.mem[self.i as usize]     = x / 100;
+        self.mem[self.i as usize + 1] = (x / 10) % 10;
+        self.mem[self.i as usize + 2] = x % 10;
     }
 }
