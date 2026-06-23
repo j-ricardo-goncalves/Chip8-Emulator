@@ -85,15 +85,17 @@ impl Cpu {
             (0xB, _, _, _) => self.pc = opcode & 0xFFF + self.v[n2 as usize] as u16, 
             (0xC, _, _, _) => self.v[n2 as usize] = (rand::random_range(0..=0xFF) & (opcode & 0x00FF)) as u8,
             (0xD, _, _, _) => self.draw(n2, n3, n4, buffer),
-            (0xE, _, 9, 0xE) => if input[n3 as usize] {self.pc += 2;},
-            (0xE, _, 0xA, 1) => if !input[n3 as usize] {self.pc += 2;},
-            (0xF, _, 0, 7) => self.v[n3 as usize] = self.dt,
-            (0xF, _, 1, 5) => self.dt = self.v[n3 as usize],
-            (0xF, _, 1, 8) => self.st = self.v[n3 as usize],
-            (0xF, _, 1, 0xE) => self.i = self.i.wrapping_add(self.v[n3 as usize] as u16),
+            (0xE, _, 9, 0xE) => if input[n2 as usize] {self.pc += 2;},
+            (0xE, _, 0xA, 1) => if !input[n2 as usize] {self.pc += 2;},
+            (0xF, _, 0, 7) => self.v[n2 as usize] = self.dt,
+            (0xF, _, 1, 5) => self.dt = self.v[n2 as usize],
+            (0xF, _, 1, 8) => self.st = self.v[n2 as usize],
+            (0xF, _, 1, 0xE) => self.i = self.i.wrapping_add(self.v[n2 as usize] as u16),
             (0xF, _, 0, 0xA) => if input.iter().all(|&x| !x) {self.pc -= 2;}
             (0xF, _, 2, 9) => self.i = self.v[n2 as usize] as u16 * 5,
             (0xF, _, 3, 3) => self.decimal_conversion(n2),
+            (0xF, _, 5, 5) => self.store_v_register(n2),
+            (0xF, _, 6, 5) => self.load_v_register(n2),
             _ => println!("No such opcode: {}", opcode),
         }
     }
@@ -133,5 +135,17 @@ impl Cpu {
         self.mem[self.i as usize]     = x / 100;
         self.mem[self.i as usize + 1] = (x / 10) % 10;
         self.mem[self.i as usize + 2] = x % 10;
+    }
+
+    pub fn store_v_register(&mut self, x: u16) {    
+        for reg in 0..=x {
+            self.mem[self.i as usize + reg as usize] = self.v[reg as usize];
+        }
+    }
+
+    pub fn load_v_register(&mut self, x: u16) {
+        for reg in 0..=x {
+            self.v[reg as usize] = self.mem[self.i as usize + reg as usize];
+        }
     }
 }
