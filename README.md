@@ -1,7 +1,8 @@
 # Chip8-Emulator
 
-A Chip-8 Emulator/Interpreter written in Rust.
 ![Pong running on the emulator](assets/demo.gif)
+
+A Chip-8 Emulator/Interpreter written in Rust.
 
 ## What is Chip-8?
 
