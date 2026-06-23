@@ -68,6 +68,9 @@ impl Cpu {
             (0xD, _, _, _) => self.draw(n2, n3, n4, buffer),
             (0xE, _, 9, 0xE) => if input[n3 as usize] {self.pc += 2;},
             (0xE, _, 0xA, 1) => if !input[n3 as usize] {self.pc += 2;},
+            (0xF, _, 0, 7) => self.v[n3 as usize] = self.dt,
+            (0xF, _, 1, 5) => self.dt = self.v[n3 as usize],
+            (0xF, _, 1, 8) => self.st = self.v[n3 as usize],
             _ => println!("No such opcode: {}", opcode),
         }
     }
