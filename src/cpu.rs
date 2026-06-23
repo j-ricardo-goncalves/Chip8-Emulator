@@ -1,7 +1,7 @@
 use crate::screen;
 use rand::rng;
 
-const font: [u8; 80] = [
+const FONT: [u8; 80] = [
 	0xF0, 0x90, 0x90, 0x90, 0xF0,		// 0
 	0x20, 0x60, 0x20, 0x20, 0x70,		// 1
 	0xF0, 0x10, 0xF0, 0x80, 0xF0,		// 2
@@ -33,8 +33,10 @@ pub struct Cpu {
 
 impl Cpu {
     pub fn new() -> Self {
+        let mut mem = [0u8; 4096];
+        mem[0x000..0x050].copy_from_slice(&FONT); // load font into memory
         Cpu {
-            mem: [0; 4096],
+            mem,
             pc: 0x200,
             i: 0,
             v: [0; 16],
