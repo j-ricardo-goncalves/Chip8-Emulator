@@ -148,7 +148,9 @@ impl Cpu {
                 let index = (y as usize+ i as usize) * 64 + (x as usize + j as usize);
                 if sprite_data & 0x80 != 0 {
                     buffer[index] ^= screen::ON;
-                    self.v[0xF] = if buffer[index] == screen::OFF {0} else {1};
+                    if buffer[index] == screen::OFF {
+                        self.v[0xF] = 1; 
+                    }
                 }
                 sprite_data <<= 1;
             }
