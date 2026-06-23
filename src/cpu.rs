@@ -111,7 +111,10 @@ impl Cpu {
             (0xF, _, 1, 5) => self.dt = self.v[n2 as usize],
             (0xF, _, 1, 8) => self.st = self.v[n2 as usize],
             (0xF, _, 1, 0xE) => self.i = self.i.wrapping_add(self.v[n2 as usize] as u16),
-            (0xF, _, 0, 0xA) => if input.iter().all(|&x| !x) {self.pc -= 2;}
+            (0xF, _, 0, 0xA) => match input.iter().position(|&k| k) {
+                Some(key) => self.v[n2 as usize] = key as u8,
+                None => self.pc -= 2,
+            },
             (0xF, _, 2, 9) => self.i = self.v[n2 as usize] as u16 * 5,
             (0xF, _, 3, 3) => self.decimal_conversion(n2),
             (0xF, _, 5, 5) => self.store_v_register(n2),
