@@ -17,9 +17,12 @@ fn main() {
     }
     
     while !window.is_key_down(Key::Escape) {
-        input::get_input(&window ,&mut input);
-        cpu::Cpu::tick(&mut cpu, &mut buffer, &input);
+        input::get_input(&window, &mut input);
+        for _ in 0..10 {
+            cpu.tick(&mut buffer, &input);
+        }
+        cpu.tick_timers();
         screen::update_buffer(&mut window, &buffer);
-        std::thread::sleep(time::Duration::from_millis(20));
+        std::thread::sleep(time::Duration::from_millis(16)); // ~60fps
     }
 }
