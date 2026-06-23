@@ -26,17 +26,17 @@ impl Cpu {
         }
     }
 
-    pub fn tick(&mut self, buffer: &mut [u32]) {
+    pub fn tick(&mut self, buffer: &mut [u32], input: &[bool; 16]) {
         let high_nibble = self.mem[self.pc as usize] as u16;
         let low_nibble  = self.mem[(self.pc+1) as usize] as u16;
         let opcode: u16 = high_nibble << 8 | low_nibble;
         
         self.pc += 2;
 
-        self.execute(opcode, buffer)        
+        self.execute(opcode, buffer, input)        
     }
 
-    pub fn execute(&mut self, opcode: u16, buffer: &mut [u32]) {
+    pub fn execute(&mut self, opcode: u16, buffer: &mut [u32], input: &[bool; 16]) {
         let n1 = (opcode & 0xF000) >> 12;
         let n2 = (opcode & 0x0F00) >> 8;
         let n3 = (opcode & 0x00F0) >> 4;
@@ -66,6 +66,8 @@ impl Cpu {
             (0xB, _, _, _) => self.pc = opcode & 0xFFF + self.v[n2 as usize] as u16, 
             (0xC, _, _, _) => self.v[n2 as usize] = (rand::random_range(0..=0xFF) & (opcode & 0x00FF)) as u8,
             (0xD, _, _, _) => self.draw(n2, n3, n4, buffer),
+            (0xE, _, 9, 0xE) => if input[n3 as usize] {self.pc += 2;},
+            (0xE, _, 0xA, 1) => if !input[n3 as usize] {self.pc += 2;},
             _ => println!("No such opcode: {}", opcode),
         }
     }
