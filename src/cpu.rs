@@ -104,7 +104,7 @@ impl Cpu {
             }
             (9, _, _, 0) => if self.v[n2 as usize] != self.v[n3 as usize] {self.pc += 2;},
             (0xA, _, _, _) => self.i = opcode & 0xFFF,                         // set i register
-            (0xB, _, _, _) => self.pc = opcode & 0xFFF + self.v[n2 as usize] as u16, 
+            (0xB, _, _, _) => self.pc = (opcode & 0x0FFF) + self.v[0] as u16,
             (0xC, _, _, _) => self.v[n2 as usize] = (rand::random_range(0..=0xFF) & (opcode & 0x00FF)) as u8,
             (0xD, _, _, _) => self.draw(n2, n3, n4, buffer),
             (0xE, _, 9, 0xE) => if input[n2 as usize] {self.pc += 2;},
