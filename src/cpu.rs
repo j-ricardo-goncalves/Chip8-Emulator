@@ -75,11 +75,31 @@ impl Cpu {
             (8, _, _, 1) => self.v[n2 as usize] |= self.v[n3 as usize],
             (8, _, _, 2) => self.v[n2 as usize] &= self.v[n3 as usize],
             (8, _, _, 3) => self.v[n2 as usize] ^= self.v[n3 as usize],
-            (8, _, _, 4) => self.v[n2 as usize] = self.v[n2 as usize].wrapping_add(self.v[n3 as usize]),
-            (8, _, _, 5) => self.v[n2 as usize] = self.v[n2 as usize].wrapping_sub(self.v[n3 as usize]),
-            (8, _, _, 6) => self.v[n2 as usize] >>= 1, 
-            (8, _, _, 7) => self.v[n2 as usize] = self.v[n3 as usize] - self.v[n2 as usize],
-            (8, _, _, 0xE) => self.v[n2 as usize] <<= 1, 
+            (8, _, _, 4) => {
+                let (result, overflow) = self.v[n2 as usize].overflowing_add(self.v[n3 as usize]);
+                self.v[n2 as usize] = result;
+                self.v[0xF] = overflow as u8;
+            }
+            (8, _, _, 5) => {
+                let borrow = self.v[n2 as usize] < self.v[n3 as usize];
+                self.v[n2 as usize] = self.v[n2 as usize].wrapping_sub(self.v[n3 as usize]);
+                self.v[0xF] = !borrow as u8;
+            }
+            (8, _, _, 6) => {
+                let bit = self.v[n2 as usize] & 0x1;
+                self.v[n2 as usize] >>= 1;
+                self.v[0xF] = bit;
+            }
+            (8, _, _, 7) => {
+                let borrow = self.v[n3 as usize] < self.v[n2 as usize];
+                self.v[n2 as usize] = self.v[n3 as usize].wrapping_sub(self.v[n2 as usize]);
+                self.v[0xF] = !borrow as u8;
+            }
+            (8, _, _, 0xE) => {
+                let bit = (self.v[n2 as usize] >> 7) & 0x1;
+                self.v[n2 as usize] <<= 1;
+                self.v[0xF] = bit;
+            }
             (9, _, _, 0) => if self.v[n2 as usize] != self.v[n3 as usize] {self.pc += 2;},
             (0xA, _, _, _) => self.i = opcode & 0xFFF,                         // set i register
             (0xB, _, _, _) => self.pc = opcode & 0xFFF + self.v[n2 as usize] as u16, 
