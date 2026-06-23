@@ -71,6 +71,8 @@ impl Cpu {
             (0xF, _, 0, 7) => self.v[n3 as usize] = self.dt,
             (0xF, _, 1, 5) => self.dt = self.v[n3 as usize],
             (0xF, _, 1, 8) => self.st = self.v[n3 as usize],
+            (0xF, _, 1, 0xE) => self.i = self.i.wrapping_add(self.v[n3 as usize] as u16),
+            (0xF, _, 0, 0xA) => if input.iter().all(|&x| !x) {self.pc -= 2;}
             _ => println!("No such opcode: {}", opcode),
         }
     }
