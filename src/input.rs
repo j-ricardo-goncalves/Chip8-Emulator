@@ -24,8 +24,9 @@ pub fn get_input(window: &Window, input: &mut [bool; 16]) {
             Key::C => input[0xB] = true,
             Key::V => input[0xF] = true,
              
-            Key::Space => println!("PRESSING SPACE YIPPIE"),
-            _ => println!(""),
+            Key::Space => if cfg!(debug_assertions) {println!("pausing/resuming the rom");},
+            Key::F5 => if cfg!(debug_assertions) {println!("resetting the rom");},
+            _ => assert!(true),
         }
     );
 }
