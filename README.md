@@ -37,14 +37,17 @@ Chip-8 is an interpreted language used in many pieces of hardware from the 1970'
   </tr>
 </table>
 
-## How to run? 
-In the parent directory: <br>
-```
-cargo run --release
-``` 
-Or 
-<br>
+## How to Run
 
+Install directly via Cargo:
+
+```bash
+cargo install --path .
+Chip8-Emulator <rom_path>
 ```
-cargo build --release
+
+Or run without installing:
+
+```bash
+cargo run --release <rom_path>
 ```
